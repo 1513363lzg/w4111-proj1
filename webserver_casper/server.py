@@ -111,14 +111,15 @@ def index():
   # example of a database query
   #
   cursor = g.conn.execute("SELECT * FROM buildings")
-  building_names = g.conn.execute("select COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'buildings'")
-  names = [i for i in building_names]
-  results={name:[] for name in names}
-  for name in names:
-    for result in cursor:
-      results[name].append(result[name])
-  cursor.close()
-  building_names.close()
+  # building_names = g.conn.execute("select COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'buildings'")
+  results = cursor.fetchall()
+  names = ['name','address','zipcode','year','valuation','since','team_name']
+  # results={name:[] for name in names}
+  # for name in names:
+  #   for result in cursor:
+  #     results[name].append(result[name])
+  # cursor.close()
+  # building_names.close()
 
   #
   # Flask uses Jinja templates, which is an extension to HTML where you can
@@ -153,8 +154,8 @@ def index():
   # render_template looks in the templates/ folder for files.
   # for example, the below file reads template/index.html
   #
-  return render_template("index.html", results=results)
-
+  # return render_template("index.html", results=zip(*results.values()),names=names)
+  return render_template("index.html", results=results, names=names)
 #
 # This is an example of a different path.  You can see it at:
 # 
@@ -206,5 +207,5 @@ if __name__ == "__main__":
     HOST, PORT = host, port
     print("running on %s:%d" % (HOST, PORT))
     app.run(host=HOST, port=PORT, debug=debug, threaded=threaded)
-
+  app.debug=True
   run()
