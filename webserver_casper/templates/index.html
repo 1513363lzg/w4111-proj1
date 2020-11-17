@@ -13,11 +13,20 @@ div {width: 70%; padding 10px; background-color: #648CD1; color: #31D8EB; margin
  
 <table align="center" border="1" style="background-color:lightblue">
   <p align="center" style="background-color:lightblue">There are following buildings for you to consider</a></p>
-  {% for hey,value in results.items() %} 
+  {% for key,values in results.items() %} 
+   <th>{{key}}</th>
+   {% if key == 'name'%}
+  {% for value in values %}
   <tr>
-     <th style=font-size:10px>{{key}}</th>
+     <td><a href="{{value}}">{{value}}</td>
+  </tr>
+  {% endfor %}
+  {% else %}
+  {% for value in values %}
+  <tr>
      <td>{{value}}</td>
   </tr>
+  {% endfor %}
   {% endfor %}
  </table>
 <div>
