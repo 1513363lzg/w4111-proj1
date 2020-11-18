@@ -1,0 +1,36 @@
+<html>
+<style>
+    body{ 
+      font-size: 12pt;
+      font-family: arial;
+    }
+div {width: 70%; padding 10px; background-color: #648CD1; color: #31D8EB; margin: auto; text-align: center;}
+</style>
+
+
+<body>
+  <h1 align='center'>Welcome to Find you home-like apartment</h1>
+ 
+ <form method="POST">  <p align="center" style=font-size: 16px>Search the table for Buildings name, year, management team             
+                  <input align="center" class="form-control" id="myInput" type="text" name= "search" placeholder="Search here..">
+                  </p>  
+  </form> 
+
+<table align="center" border="1" style="background-color:lightblue">
+
+  <p align="center" style="background-color:lightblue">There are following buildings for you to consider</a></p>
+  {% for name in names %} 
+  <th scope='column'>{{name}}</th>
+  {% endfor %}
+
+  {% for values in results %}
+  <tr>
+  <td><a href={{values[0]}}/{{values[1].replace(' ', '_') }}/{{values[2]}}>{{values[0]}}</a></td>
+  {% for value in values[1:] %}  
+  <td>{{value}}</td>
+  {% endfor %}
+  </tr>
+  {% endfor %}
+ </table>
+</body>
+</html>
