@@ -13,6 +13,7 @@ import os
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response
+import numpy as np
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
@@ -112,8 +113,8 @@ def index():
   #
   cursor = g.conn.execute("SELECT * FROM buildings")
   # building_names = g.conn.execute("select COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'buildings'")
-  results = cursor.fetchall()
-  names = ['name','address','zipcode','year','valuation','since','team_name']
+  g.results = cursor.fetchall()
+  g.names = ['name','address','zipcode','year','valuation','since','team_name']
   # results={name:[] for name in names}
   # for name in names:
   #   for result in cursor:
@@ -155,7 +156,7 @@ def index():
   # for example, the below file reads template/index.html
   #
   # return render_template("index.html", results=zip(*results.values()),names=names)
-  return render_template("index.html", results=results, names=names)
+  return render_template("index.html", results=g.results, names=g.names)
 #
 # This is an example of a different path.  You can see it at:
 # 
@@ -164,11 +165,54 @@ def index():
 # Notice that the function name is another() rather than index()
 # The functions for each app.route need to have different names
 #
+@app.route('/<name>')
+def building_detail(name):
+  zipcode = name.split('_')[1].replace('_',' ')
+  address = name.split('_')[2]
+  commands_apart = f"""select * from apartments_listed 
+                    where zipcode in (select zipcode from buildings where zipcode='{zipcode} and address='{address}')
+                    """
+  commands_tweets = f"""select t.user_id, t.tweet_time, t.tweet_content, t.sentiment_type from commented c, buildings b, tweets t 
+                     where b.zipcode='{zipcode}' and b.address='{address}' and b.zipcode=c.zipcode and b.address=c.address
+                     and t.user_id=c.user_id and t.tweet_time=c.tweet_time
+                    """
+  commands_manager = f"""select * from prospect_manager
+                      where team_name in (select team_name from buildings where zipcode='{zipcode}')"""
+  commands_surr = f"""select type_s, count(*) from surroundings
+                      where zipcode in (select s.zipcode_s from buildings b,building_surround s where s.zipcode='{zipcode}' and s.address='{address}')
+                      group by type_s
+                    """
+  cursor_a = g.conn.execute(commands_apart)
+  cursor_t = g.conn.execute(commands_tweets)
+  cursor_m = g.conn.execute(commands_manager)
+  cursor_s = g.conn.execute(commands_surr)
+
+  result_a, result_t, result_m , result_s  = cursor_a.fetchall(),cursor_t.fetchall(),cursor_m.fetchall(),cursor_s.fetchall()
+  names_a = ['price','apart_number','zipcode','rental','layout','address','by_date']
+  names_t = ['user_id','tweet_time','tweet_content','sentiment_type']
+  names_m = ['team_name','number_of_employees']
+  names_s = ['type_s','zipcode','address_surround']
+  cursor_a.close(),cursor_t.close(),cursor_m.close(),cursor_s.close()
+
+  return render_template("result.html",result_a=result_a,result_t=result_t,result_m=result_m,result_s=result_s,names_a=names_a,names_t=names_t,names_m=names_m,names_s=names_s)
+
 @app.route('/tweets')
 def another():
   return render_template("tweets.html")
 
-
+@app.route('/',methods = ['GET', 'POST'])
+def search_buildings():
+  if request.method == 'POST':
+    name = request.form.get('search')
+    commands = f"select * from buildings where name ilike '%%{name}%%' or address ilike '%%{name}%%' or team_name ilike '%%{name}%%'"
+    cursor = g.conn.execute(commands)
+    results = cursor.fetchall()
+    cursor.close()
+    names = ['name','address','zipcode','year','valuation','since','team_name']
+    return render_template("index.html", results=results, names=names)
+  return '''<form method="POST"> What do you want? Please enter keyword: <input type="text" name="search"><br>
+                  <input type="submit" value="Go"><br>
+                  </form>'''
 # Example of adding new data to the database
 @app.route('/add', methods=['POST'])
 def add():
