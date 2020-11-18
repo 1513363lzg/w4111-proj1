@@ -119,7 +119,7 @@ def index():
   # for name in names:
   #   for result in cursor:
   #     results[name].append(result[name])
-  # cursor.close()
+  cursor.close()
   # building_names.close()
 
   #
@@ -165,12 +165,11 @@ def index():
 # Notice that the function name is another() rather than index()
 # The functions for each app.route need to have different names
 #
-@app.route('/<name>')
-def building_detail(name):
-  zipcode = name.split('_')[1].replace('_',' ')
-  address = name.split('_')[2]
+@app.route('/<name>/<address>/<zipcode>')
+def building_detail(name,address,zipcode):
+  address = address.replace('_',' ')
   commands_apart = f"""select * from apartments_listed 
-                    where zipcode in (select zipcode from buildings where zipcode='{zipcode} and address='{address}')
+                    where zipcode in (select zipcode from buildings where zipcode='{zipcode}' and address='{address}')
                     """
   commands_tweets = f"""select t.user_id, t.tweet_time, t.tweet_content, t.sentiment_type from commented c, buildings b, tweets t 
                      where b.zipcode='{zipcode}' and b.address='{address}' and b.zipcode=c.zipcode and b.address=c.address
@@ -191,7 +190,7 @@ def building_detail(name):
   names_a = ['price','apart_number','zipcode','rental','layout','address','by_date']
   names_t = ['user_id','tweet_time','tweet_content','sentiment_type']
   names_m = ['team_name','number_of_employees']
-  names_s = ['type_s','zipcode','address_surround']
+  names_s = ['type_s','Numbers']
   cursor_a.close(),cursor_t.close(),cursor_m.close(),cursor_s.close()
 
   return render_template("result.html",result_a=result_a,result_t=result_t,result_m=result_m,result_s=result_s,names_a=names_a,names_t=names_t,names_m=names_m,names_s=names_s)
