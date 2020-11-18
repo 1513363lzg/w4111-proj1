@@ -3,7 +3,7 @@ web-applicaiton-NY-rental-price
 
 PostgreSQL account: sy2890
 
-URL of our web application:http://localhost:4111/
+URL of our web application:http://35.243.173.134:8111/
 
 Description of what we implemented: We basically implmented everything we descriped in our original proposal. We showed the buildings basic attributes in the index page, and detailed information including apartments, surroundings, prospect managers and tweet comments in hyperlinks to other routes.
 
