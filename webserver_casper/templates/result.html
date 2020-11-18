@@ -1,0 +1,77 @@
+<html>
+  <style>
+    body{ 
+      font-size: 15pt;
+      font-family: arial;
+    }
+  </style>
+
+
+<body>
+  <h2 align='center'>Building details</h2>
+ <table align="center" border="1" style="background-color:gray">
+  <p align="center" style="background-color:gray">Apartments</a></p>
+  {% for name in names_a %} 
+  <th scope='column'>{{name}}</th>
+  {% endfor %}
+  {% for values in result_a %}
+  <tr>
+  {% for value in values %}  
+  <td>{{value}}</td>
+  {% endfor %}
+  </tr>
+  {% endfor %}
+ </table>
+
+ <table align="center" border="1" style="background-color:gray">
+  <p align="center" style="background-color:gray">Tweets</a></p>
+  {% for name in names_t %} 
+  <th scope='column'>{{name}}</th>
+  {% endfor %}
+  {% for values in result_t %}
+  <tr>
+  {% for value in values %}  
+  <td>{{value}}</td>
+  {% endfor %}
+  </tr>
+  {% endfor %}
+ </table>
+
+ <table align="center" border="1" style="background-color:gray">
+  <p align="center" style="background-color:gray">Manager</a></p>
+  {% for name in names_m %} 
+  <th scope='column'>{{name}}</th>
+  {% endfor %}
+  {% for values in result_m %}
+  <tr>
+  {% for value in values %}  
+  <td>{{value}}</td>
+  {% endfor %}
+  </tr>
+  {% endfor %}
+ </table>
+
+ <table align="center" border="1" style="background-color:gray">
+  <p align="center" style="background-color:gray">Surroundings</a></p>
+  {% for name in names_s %} 
+  <th scope='column'>{{name}}</th>
+  {% endfor %}
+  {% for values in result_s %}
+  <tr>
+  {% for value in values %}  
+  <td>{{value}}</td>
+  {% endfor %}
+  </tr>
+  {% endfor %}
+ </table>
+
+<p>
+  <br>
+<p align='center'><a href="/">Back to homepage</a> </p>
+<p align='center'><a href="/search">Back to product search</a> </p>
+</p>
+
+</body>
+
+
+</html>
