@@ -44,7 +44,8 @@
   {% endfor %}
   {% for values in result_m %}
   <tr>
-  {% for value in values %}  
+  <td><a href=/{{values[0]}}>{{values[0]}}</a></td>
+  {% for value in values[1:] %} 
   <td>{{value}}</td>
   {% endfor %}
   </tr>
