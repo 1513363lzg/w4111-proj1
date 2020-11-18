@@ -176,7 +176,7 @@ def building_detail(name,address,zipcode):
                      and t.user_id=c.user_id and t.tweet_time=c.tweet_time
                     """
   commands_manager = f"""select * from prospect_manager
-                      where team_name in (select team_name from buildings where zipcode='{zipcode}')"""
+                      where team_name in (select team_name from buildings where zipcode='{zipcode}' and address='{address}')"""
   commands_surr = f"""select type_s, count(*) from surroundings
                       where zipcode in (select s.zipcode_s from buildings b,building_surround s where s.zipcode='{zipcode}' and s.address='{address}')
                       group by type_s
@@ -195,9 +195,14 @@ def building_detail(name,address,zipcode):
 
   return render_template("result.html",result_a=result_a,result_t=result_t,result_m=result_m,result_s=result_s,names_a=names_a,names_t=names_t,names_m=names_m,names_s=names_s)
 
-@app.route('/tweets')
-def another():
-  return render_template("tweets.html")
+@app.route('/<teamname>')
+def manager_detail(teamname):
+  comment = f"""select * from tweets where user_id in (select s.user_id from satisfy s, prospect_manager p where p.team_name='{teamname}')"""
+  names_t = ['user_id', 'tweet_time', 'tweet_content', 'sentiment_type']
+  cursor_t = g.conn.execute(comment)
+  result = cursor_t.fetchall()
+  cursor_t.close()
+  return render_template("tweets.html",result=result,names=names_t)
 
 @app.route('/',methods = ['GET', 'POST'])
 def search_buildings():
